@@ -1,3 +1,11 @@
+/***********************************************************************************************************************************************
+Filename:	score_calculate.js
+Created by:	Sanelord Chan
+Revision:	v1.1
+History:
+v1.1 - Fixed calculation error at gross total and hadicap sumup when the game mark plus hadicap is over 300.
+v1.0 - The first complete version
+************************************************************************************************************************************************/
 let ptA, ptB;
 
 function addLog(string, newLine) {
@@ -64,7 +72,7 @@ function getInput(id, max) {
 	if(document.getElementById(id).value.length != 0) {
 		value = document.getElementById(id).value;
 		if(isNaN(value)) {
-			value =-1;
+			value = -1;
 		}
 		else if(value > max) {
 			value = -1;
@@ -90,6 +98,28 @@ function sumPin(pin1, pin2) {
 	if((pin1 != -1) & (pin2 != -1)) {
 		result = Number(pin1) + Number(pin2);
 		// addLog("sumPin() result = " + result.toString(10), true);
+	}
+	return result;
+}
+
+function sumHandicap(hcap1, hcap2, pin1, pin2) {
+	let result = -1;
+	let h1, h2;
+	
+	if((hcap1 != -1) & (hcap2 != -1) & (pin1 != -1) & (pin2 != -1))
+	{
+		h1 = Number(hcap1);
+		h2 = Number(hcap2);
+		
+		if((Number(hcap1) + Number(pin1)) > 300) {
+			h1 = (300 - Number(pin1));
+		}
+		else {
+		}
+		if((Number(hcap2) + Number(pin2)) > 300) {
+			h2 = (300 - Number(pin2));
+		}
+		result = h1 + h2;
 	}
 	return result;
 }
@@ -330,59 +360,57 @@ function calculate() {
 		setPinValue("Nmark_BG4", sumPin(pB1_g4Pin, pB2_g4Pin));
 
 		// Team A - Handicap
-		pinA = sumPin(pA1_hcap, pA2_hcap);
-		setPinValue("Hcap_AG1", pinA);
-		setPinValue("Hcap_AG2", pinA);
-		setPinValue("Hcap_AG3", pinA);
-		setPinValue("Hcap_AG4", pinA);
+		setPinValue("Hcap_AG1", sumHandicap(pA1_hcap, pA2_hcap, pA1_g1Pin, pA2_g1Pin));
+		setPinValue("Hcap_AG2", sumHandicap(pA1_hcap, pA2_hcap, pA1_g2Pin, pA2_g2Pin));
+		setPinValue("Hcap_AG3", sumHandicap(pA1_hcap, pA2_hcap, pA1_g3Pin, pA2_g3Pin));
+		setPinValue("Hcap_AG4", sumHandicap(pA1_hcap, pA2_hcap, pA1_g4Pin, pA2_g4Pin));
 
 		// Team B - Handicap
-		pinB = sumPin(pB1_hcap, pB2_hcap);
-		setPinValue("Hcap_BG1", pinB);
-		setPinValue("Hcap_BG2", pinB);
-		setPinValue("Hcap_BG3", pinB);
-		setPinValue("Hcap_BG4", pinB);
+		setPinValue("Hcap_BG1", sumHandicap(pB1_hcap, pB2_hcap, pB1_g1Pin, pB2_g1Pin));
+		setPinValue("Hcap_BG2", sumHandicap(pB1_hcap, pB2_hcap, pB1_g2Pin, pB2_g2Pin));
+		setPinValue("Hcap_BG3", sumHandicap(pB1_hcap, pB2_hcap, pB1_g3Pin, pB2_g3Pin));
+		setPinValue("Hcap_BG4", sumHandicap(pB1_hcap, pB2_hcap, pB1_g4Pin, pB2_g4Pin));
 
 		// Total - Game 1
-		pinA = sumPin(pA1_hcap, pA1_g1Pin);
-		pinB = sumPin(pA2_hcap, pA2_g1Pin);
+		pinA = sumPin300(pA1_hcap, pA1_g1Pin);
+		pinB = sumPin300(pA2_hcap, pA2_g1Pin);
 		tA_g1 = sumPin(pinA, pinB);
 		setPinValue("GTmark_AG1", tA_g1);
-		pinA = sumPin(pB1_hcap, pB1_g1Pin);
-		pinB = sumPin(pB2_hcap, pB2_g1Pin);
+		pinA = sumPin300(pB1_hcap, pB1_g1Pin);
+		pinB = sumPin300(pB2_hcap, pB2_g1Pin);
 		tB_g1 = sumPin(pinA, pinB);
 		setPinValue("GTmark_BG1", tB_g1);
 		setPoint("Gpoint_AG1", tA_g1, "Gpoint_BG1", tB_g1);
 
 		// Total - Game 2
-		pinA = sumPin(pA1_hcap, pA1_g2Pin);
-		pinB = sumPin(pA2_hcap, pA2_g2Pin);
+		pinA = sumPin300(pA1_hcap, pA1_g2Pin);
+		pinB = sumPin300(pA2_hcap, pA2_g2Pin);
 		tA_g2 = sumPin(pinA, pinB);
 		setPinValue("GTmark_AG2", tA_g2);
-		pinA = sumPin(pB1_hcap, pB1_g2Pin);
-		pinB = sumPin(pB2_hcap, pB2_g2Pin);
+		pinA = sumPin300(pB1_hcap, pB1_g2Pin);
+		pinB = sumPin300(pB2_hcap, pB2_g2Pin);
 		tB_g2 = sumPin(pinA, pinB);
 		setPinValue("GTmark_BG2", tB_g2);
 		setPoint("Gpoint_AG2", tA_g2, "Gpoint_BG2", tB_g2);
 
 		// Total - Game 3
-		pinA = sumPin(pA1_hcap, pA1_g3Pin);
-		pinB = sumPin(pA2_hcap, pA2_g3Pin);
+		pinA = sumPin300(pA1_hcap, pA1_g3Pin);
+		pinB = sumPin300(pA2_hcap, pA2_g3Pin);
 		tA_g3 = sumPin(pinA, pinB);
 		setPinValue("GTmark_AG3", tA_g3);
-		pinA = sumPin(pB1_hcap, pB1_g3Pin);
-		pinB = sumPin(pB2_hcap, pB2_g3Pin);
+		pinA = sumPin300(pB1_hcap, pB1_g3Pin);
+		pinB = sumPin300(pB2_hcap, pB2_g3Pin);
 		tB_g3 = sumPin(pinA, pinB);
 		setPinValue("GTmark_BG3", tB_g3);
 		setPoint("Gpoint_AG3", tA_g3, "Gpoint_BG3", tB_g3);
 
 		// Total - Game 4
-		pinA = sumPin(pA1_hcap, pA1_g4Pin);
-		pinB = sumPin(pA2_hcap, pA2_g4Pin);
+		pinA = sumPin300(pA1_hcap, pA1_g4Pin);
+		pinB = sumPin300(pA2_hcap, pA2_g4Pin);
 		tA_g4 = sumPin(pinA, pinB);
 		setPinValue("GTmark_AG4", tA_g4);
-		pinA = sumPin(pB1_hcap, pB1_g4Pin);
-		pinB = sumPin(pB2_hcap, pB2_g4Pin);
+		pinA = sumPin300(pB1_hcap, pB1_g4Pin);
+		pinB = sumPin300(pB2_hcap, pB2_g4Pin);
 		tB_g4 = sumPin(pinA, pinB);
 		setPinValue("GTmark_BG4", tB_g4);
 		setPoint("Gpoint_AG4", tA_g4, "Gpoint_BG4", tB_g4);
