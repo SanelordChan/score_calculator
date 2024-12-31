@@ -1,9 +1,10 @@
 /***********************************************************************************************************************************************
 Filename:	score_calculate.js
 Created by:	Sanelord Chan
-Revision:	v1.1
+Revision:	v1.2
 History:
-v1.1 - Fixed calculation error at gross total and hadicap sumup when the game mark plus hadicap is over 300.
+v1.2 - Added the actual total pins and the total sum pins are shown in the form.
+v1.1 - Fixed the two calculation errors that were show in the box of Handicap and Gross total when the player who get over 300 points in a certain game.
 v1.0 - The first complete version
 ************************************************************************************************************************************************/
 let ptA, ptB;
@@ -148,6 +149,49 @@ function setPinValue(id, pin) {
 	else {
 		document.getElementById(id).innerHTML = "<font color='brown'>N/A</font>";
 	}
+}
+
+function setTotalPinValue(id1, id2, actual_pins1, actual_pins2, total_pins1, total_pins2) {
+	let str_1 = "--";
+	let str_2 = "--";
+	
+	if((id1 != -1) & (actual_pins1 != -1) & (total_pins1 != -1) &
+	   (id2 != -1) & (actual_pins2 != -1) & (total_pins2 != -1)) {
+		
+		if(actual_pins1 == actual_pins2) {
+			str_1 = actual_pins1.toString(10) + " / ";
+			str_2 = actual_pins2.toString(10) + " / ";
+		}
+		else if(actual_pins1 > actual_pins2) {
+			str_1 = "<font color='blue'>" + actual_pins1.toString(10) + "</font>" + " / ";
+			str_2 = actual_pins2.toString(10) + " / ";
+		}
+		else {
+			str_1 = actual_pins1.toString(10) + " / ";
+			str_2 = "<font color='blue'>" + actual_pins2.toString(10) + "</font>" + " / ";
+		}	
+		str_1 = str_1.fontsize(5);
+		str_2 = str_2.fontsize(5);
+		
+		if(total_pins1 == total_pins2) {
+			str_1 += total_pins1.toString(10);
+			str_2 += total_pins2.toString(10);
+		}
+		else if(total_pins1 > total_pins2) {
+			str_1 += "<font color='blue'>" + total_pins1.toString(10) + "</font>";
+			str_2 += total_pins2.toString(10);
+		}
+		else {
+			str_1 += total_pins1.toString(10);
+			str_2 += "<font color='blue'>" + total_pins2.toString(10) + "</font>";
+		}		
+		str_1 = str_1.fontsize(5);
+		str_2 = str_2.fontsize(5);
+	}
+	document.getElementById(id1).innerHTML = str_1;
+	document.getElementById(id2).innerHTML = str_2;
+	document.getElementById(id1).style.fontWeight = "700";
+	document.getElementById(id2).style.fontWeight = "700";
 }
 
 function setPoint(idA, pinA, idB, pinB) {
@@ -436,4 +480,11 @@ function calculate() {
 
 		// Result - total points
 		setResultPoint("Tpoint_A", "Tpoint_B");
+		
+		// Total pins for both teams
+		pinA = sumPin(sumPin(sumPin(pA1_g1Pin, pA2_g1Pin), sumPin(pA1_g2Pin, pA2_g2Pin)), sumPin(sumPin(pA1_g3Pin, pA2_g3Pin), sumPin(pA1_g4Pin, pA2_g4Pin)));
+		pinB = sumPin(sumPin(sumPin(pB1_g1Pin, pB2_g1Pin), sumPin(pB1_g2Pin, pB2_g2Pin)), sumPin(sumPin(pB1_g3Pin, pB2_g3Pin), sumPin(pB1_g4Pin, pB2_g4Pin)));
+		totalA = sumPin(sumPin(tA_g1, tA_g2), sumPin(tA_g3, tA_g4));
+		totalB = sumPin(sumPin(tB_g1, tB_g2), sumPin(tB_g3, tB_g4));
+		setTotalPinValue("FMpins_A", "FMpins_B", pinA, pinB, totalA, totalB);		
 	}
